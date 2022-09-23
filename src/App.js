@@ -1,8 +1,9 @@
 import { fetchedLanguages } from "../api/api.js";
 import SearchInput from "./SearchInput.js";
+import SelectedLanguage from "./SelectedLanguage.js";
 import Suggestion from "./Suggestion.js";
 
-export default function App({ $target }) {
+export default function App({ target }) {
   this.state = {
     fetchedLanguages: [],
     selectedLanguages: [],
@@ -15,12 +16,16 @@ export default function App({ $target }) {
     };
 
     suggestion.setState({
-      itmes: this.state.fetchedLanguages,
+      selectedIndex: 0,
+      items: this.state.fetchedLanguages,
     });
+
+    selectedLanguage.setState(this.state.selectedLanguages);
   };
 
+  /// new Function 클로저
   const searchInput = new SearchInput({
-    $target,
+    target,
     initialState: "",
     onChange: async (keyword) => {
       if (keyword.length === 0) {
@@ -29,7 +34,7 @@ export default function App({ $target }) {
         });
       } else {
         const lagnuages = await fetchedLanguages(keyword);
-        console.log(lagnuages, "lagnuages");
+
         this.setState({
           fetchedLanguages: lagnuages,
         });
@@ -37,10 +42,35 @@ export default function App({ $target }) {
     },
   });
 
+  const selectedLanguage = new SelectedLanguage({
+    target,
+    initialState: [],
+  });
+
   const suggestion = new Suggestion({
-    $target,
+    target,
     initialState: {
-      itmes: [],
+      items: [],
+    },
+    onSelect: (lagnuage) => {
+      alert(lagnuage);
+
+      const nextSelectedLanguages = [...this.state.selectedLanguages];
+
+      const index = nextSelectedLanguages.findIndex(
+        (selectedLanguages) => selectedLanguages === lagnuage
+      );
+
+      if (index > -1) {
+        nextSelectedLanguages.splice(index, 1);
+      }
+
+      nextSelectedLanguages.push(lagnuage);
+
+      this.setState({
+        ...this.state,
+        selectedLanguages: nextSelectedLanguages,
+      });
     },
   });
 }

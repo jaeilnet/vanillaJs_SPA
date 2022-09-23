@@ -1,18 +1,35 @@
-export default function SearchInput({ $target, initialState, onChange }) {
-  this.$element = document.createElement("form");
-  this.$element.className = "SearchInput";
+export default function SearchInput({ target, initialState, onChange }) {
+  this.element = document.createElement("form");
+  this.element.className = "SearchInput";
   this.state = initialState;
 
-  $target.appendChild(this.$element);
+  target.appendChild(this.element);
 
   this.render = () => {
-    this.$element.innerHTML = `
-    <input class="SearchInput__input" type="text" placeholder="프로그램 언어를 입력하세요 value="${this.state}"/>`;
+    this.element.innerHTML = `
+    <input class="SearchInput__input" type="text" placeholder="프로그램 언어를 입력하세요" value="${this.state}"/>`;
   };
 
   this.render();
 
-  this.$element.addEventListener("keyup", (e) => {
-    onChange(e.target.value);
+  this.element.addEventListener("keyup", (e) => {
+    const actionIgnoreKeys = [
+      "Enter",
+      "ArrowUp",
+      "ArrowDown",
+      "ArrowLeft",
+      "ArrowRight",
+    ];
+
+    if (!actionIgnoreKeys.includes(e.key)) {
+      // 이벤트 버블링
+      // this.element 는 form 태그
+      // e.target: input.SearchInput__input; input tag
+
+      onChange(e.target.value);
+
+      // 버블링 중단 예시
+      // e.stopPropagation();
+    }
   });
 }
